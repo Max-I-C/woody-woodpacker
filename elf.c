@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <fcntl.h>
 
+
 static Elf64_Addr   g_old_addr;
 static Elf64_Addr   g_handler_addr;
 static Elf64_Addr   g_parasite_addr;
