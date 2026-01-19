@@ -16,5 +16,7 @@ start:
     pop rdi
     pop rax
 
+    lea r11, [rel start]
     mov rax, 0xAAAAAAAAAAAAAAAA
+    add rax, r11
     jmp rax

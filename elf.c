@@ -111,7 +111,7 @@ int main(int argc, char **argv)
     for (size_t i = 0; i <= g_payload_size - sizeof(uint64_t); i++) {
         uint64_t *ptr = (uint64_t *)(ptr_injection + i);
         if (*ptr == 0xAAAAAAAAAAAAAAAA) {
-            *ptr = old_entry;
+            *ptr = (int64_t)old_entry - (int64_t)g_handler_addr;
             printf("Old entry patched at offset %lu\n", i);
         }
         if (*ptr == 0xBBBBBBBBBBBBBBBB) {
