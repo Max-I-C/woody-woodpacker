@@ -25,3 +25,4 @@ save_data:
     pop rdx
     pop rcx
     pop rax
+    ret

