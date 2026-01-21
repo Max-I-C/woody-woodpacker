@@ -92,7 +92,6 @@ int main(int argc, char **argv)
     void *base = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     eh = (Elf64_Ehdr *) base;
     init_segment_value((Elf64_Phdr *)((void *)base + eh->e_phoff), eh);
-
     old_entry = eh->e_entry;
     eh->e_entry = g_handler_addr;
 
