@@ -16,6 +16,12 @@
 // -- Libft -- //
 #include "libft/libft.h"
 
+// -- Definition of the macro -- //
+#define ERROR_FILE  "Error, file problem.\n"
+#define ERROR_ARG   "Error, not enough argument.\n"
+#define ERROR_PLD   "Error, payload issue.\n"
+#define ERROR_INJ   "Error, not enough space to inject the code.\n"
+
 // -- Static variables -- //
 static Elf64_Addr   g_old_addr;
 static Elf64_Addr   g_handler_addr;
