@@ -22,6 +22,8 @@
 #define ERROR_ARG   "Error, not enough argument.\n"
 #define ERROR_PLD   "Error, payload issue.\n"
 #define ERROR_INJ   "Error, not enough space to inject the code.\n"
+#define TARGET_FILE "woody"
+#define BUFFER_SIZE 2048
 // ----------------------------- //
 
 // -- Struct -- //

@@ -1,5 +1,6 @@
-NAME				= infected_prog
-NAME_P				= obj/elf/injecter 
+NAME				= obj/elf/target
+NAME_P				= obj/elf/woody_woodpacker
+NAME_F_P			= woody
 
 CC					= cc
 CFLAGS				= 
@@ -29,6 +30,7 @@ assembly:
 	@nasm -f bin -o obj/assembly/virus_test.bin srcs/assembly/virus.s
 
 prog: $(OBJECTS_PROG)
+	@mkdir -p obj/elf
 	@$(CC) $(LFLAGS) $(OBJECTS_PROG) -o $(NAME)
 
 injecter: $(OBJECTS_PARASITE)
@@ -51,7 +53,7 @@ clean:
 	@echo "\n[Object files removed ✅]"
 
 fclean: clean
-	@$(RM) $(NAME) $(NAME_P)
+	@$(RM) $(NAME) $(NAME_P) $(NAME_F_P)
 	@make fclean --no-print-directory -C srcs/injecter/libft
 	@echo "\n[Project cleaned ✅]"
 
