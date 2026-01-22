@@ -49,5 +49,6 @@ void injection(Elf64_Ehdr *eh, void *base, size_t size, t_elf_data *elf_data);
 // - elf_utils.c - //
 bool check_for_errors(int argc, char **argv, int *fd, t_elf_data *elf_data);
 void error(char *error_msg);
+void copy_file(char *origin_file);
 // ------------------ //
 #endif
