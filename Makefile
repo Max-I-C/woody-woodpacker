@@ -8,7 +8,7 @@ LFLAGS				= -g3
 RM					= rm -rf
 
 OBJDIR				= obj
-SOURCE_PARASITE		= srcs/injecter/elf.c srcs/injecter/elf_init.c srcs/injecter/elf_injecter.c srcs/injecter/elf_utils.c
+SOURCE_PARASITE		= srcs/injecter/elf.c srcs/injecter/elf_init.c srcs/injecter/elf_injecter.c srcs/injecter/elf_utils.c srcs/injecter/elf_encrypter.c
 OBJECTS_PARASITE	= $(SOURCE_PARASITE:%.c=$(OBJDIR)/%.o)
 SOURCE_PROG			= srcs/infected/main.c
 OBJECTS_PROG		= $(SOURCE_PROG:%.c=$(OBJDIR)/%.o)

@@ -40,6 +40,9 @@ typedef struct s_elf_data
 // ---------------------- //
 
 // -- Functions ELF -- //
+// - elf_encrypter.c - //
+int  key_generation();
+void encrypter();
 // - elf_init.c - //
 void calcul_payload(char **paths, t_elf_data *elf_data);
 void init_segment_value(Elf64_Phdr *phdr, Elf64_Ehdr *eh, t_elf_data *elf_data);

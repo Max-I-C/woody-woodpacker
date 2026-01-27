@@ -19,6 +19,9 @@ void copy_file(char *origin_file)
     fd_dest = open(TARGET_FILE,  O_WRONLY | O_CREAT | O_TRUNC, 0777);
     if(fd_dest == -1)
         return(close(fd_origin), error(ERROR_FILE));
+    // -- ENCRPYTION ICI NON ? -- //
+    encrypter();
+    // -- ENCRPYTION ICI NON ? -- //
     while ((return_read = read(fd_origin, buffer, BUFFER_SIZE)) > 0)
     {
         return_write = write(fd_dest, buffer, return_read);    
