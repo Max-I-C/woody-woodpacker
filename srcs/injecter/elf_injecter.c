@@ -16,6 +16,22 @@ void patcher(unsigned char *ptr_injection, Elf64_Addr old_entry, t_elf_data *elf
             *ptr = elf_data->g_parasite_size;
             printf("Parasite size patched at offset %lu\n", i);
         }
+        if (*ptr == 0xDDDDDDDDDDDDDDDD)
+        {
+            *ptr = (uint64_t)(elf_data->g_handler_addr - elf_data->g_text_addr);
+            printf("Text offset patched at offset %lu\n", i);
+        }
+        if (*ptr == 0xEEEEEEEEEEEEEEEE)
+        {
+            *ptr = elf_data->g_text_size;
+            printf("Text size patched at offset %lu\n", i);
+        }
+        if (*ptr == 0xCCCCCCCCCCCCCCCC)
+        {
+            *ptr = (elf_data->g_payload_size - sizeof(elf_data->key))
+                - elf_data->g_parasite_size;
+            printf("Key offset patched at offset %lu\n", i);
+        }
     }
     /* TEST */
     return;
@@ -39,6 +55,7 @@ void injection(Elf64_Ehdr *eh, void *base, size_t size, t_elf_data *elf_data)
     vfd = open("obj/assembly/handler_test.bin", O_RDONLY);
     read(vfd, ptr_injection + elf_data->g_parasite_size, elf_data->g_payload_size - elf_data->g_parasite_size);
     close(vfd);
+    memcpy(ptr_injection + elf_data->g_payload_size - 16, elf_data->key, 16);
 
     patcher(ptr_injection, old_entry, elf_data);
 

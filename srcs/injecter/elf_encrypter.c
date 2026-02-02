@@ -44,8 +44,8 @@ void encrypter(Elf64_Phdr *phdr, Elf64_Ehdr *eh, void *base, t_elf_data *elf_dat
     { 
         if(phdr[i].p_type == PT_LOAD && phdr[i].p_flags == (PF_R | PF_X))   
         {
-            elf_data->target_encrypt_off = phdr[i].p_offset;
-            elf_data->target_encrypt_size = (phdr[i].p_filesz + 7) & ~7;
+            elf_data->g_text_addr = phdr[i].p_vaddr;
+            elf_data->g_text_size = phdr[i].p_filesz;
             encryption_TEA(base + phdr[i].p_offset, phdr[i].p_filesz, key);
             break;
         }
