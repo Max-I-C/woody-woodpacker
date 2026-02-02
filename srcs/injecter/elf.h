@@ -36,13 +36,18 @@ typedef struct s_elf_data
     Elf64_Off    g_handler_off;
     uint64_t     g_parasite_size;
     uint64_t     g_payload_size;
+
+    uint64_t     target_encrypt_off;
+    uint64_t     target_encrypt_size;
+    Elf64_Off    g_key_off;
+    uint32_t     key[4];
 } t_elf_data;
 // ---------------------- //
 
 // -- Functions ELF -- //
 // - elf_encrypter.c - //
 int  key_generation();
-void encrypter();
+void encrypter(Elf64_Phdr *phdr, Elf64_Ehdr *eh, void *base, t_elf_data *elf_data);
 // - elf_init.c - //
 void calcul_payload(char **paths, t_elf_data *elf_data);
 void init_segment_value(Elf64_Phdr *phdr, Elf64_Ehdr *eh, t_elf_data *elf_data);

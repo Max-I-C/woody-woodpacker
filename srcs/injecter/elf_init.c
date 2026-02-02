@@ -58,5 +58,8 @@ void init_segment_value(Elf64_Phdr *phdr, Elf64_Ehdr *eh, t_elf_data *elf_data)
     elf_data->g_parasite_off = seg_offset + seg_size;
     elf_data->g_handler_addr = elf_data->g_parasite_addr + elf_data->g_parasite_size;
     elf_data->g_handler_off = elf_data->g_parasite_off + elf_data->g_parasite_size;
+
+    elf_data->g_key_off = elf_data->g_parasite_off + (elf_data->g_payload_size - sizeof(elf_data->key));
+    elf_data->g_payload_size += sizeof(elf_data->key);
     return;
 }
