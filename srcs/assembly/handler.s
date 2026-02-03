@@ -3,7 +3,7 @@ BITS 64
 section .text 
 
 start:
-    ; 1. Sauvegarde contexte
+    ; 1. Save all register
     pushf
     push rax
     push rbx
@@ -20,30 +20,30 @@ start:
     push r14
     push r15
 
-    ; 2. mprotect (RWX sur le segment .text)
+    ; 2. mprotect of the .text section
     lea rdi, [rel start]
-    mov rax, 0xDDDDDDDDDDDDDDDD ; Offset start - début du segment
-    sub rdi, rax                
-    mov r12, rdi                ; R12 = Adresse de base de la zone à décrypter
+    mov rax, 0xDDDDDDDDDDDDDDDD ; Offset start - start of the segment
+    sub rdi, rax               
+    mov r12, rdi                ; We mark that area with the address of text offset 
 
     mov r13, 0xfffffffffffff000
-    and rdi, r13                ; Alignement page
-    mov rsi, 0xEEEEEEEEEEEEEEEE ; Taille zone cryptée
+    and rdi, r13                ; Align the page
+    mov rsi, 0xEEEEEEEEEEEEEEEE ; size of the crypted area
     add rsi, 0x2000             ; Marge
     mov rdx, 7                  ; RWX
-    mov rax, 10                 ; sys_mprotect
-    syscall
+    mov rax, 10                 ; Selecting the mprotect syscall
+    syscall                     ; Calling the mportect
 
-    ; 3. Décryptage TEA
+    ; 3. TEA Decryptage
     call decrypt_tea
 
-    ; 4. Appel du virus
+    ; 4. Virus
     lea rdi, [rel start]
-    mov rax, 0xBBBBBBBBBBBBBBBB ; g_parasite_size (taille virus.bin)
+    mov rax, 0xBBBBBBBBBBBBBBBB ; Mark the area to inject the parasite code
     sub rdi, rax
-    call rdi                    ; Affiche "WOODY"
+    call rdi                    ; Print "WOODY"
 
-    ; 5. Restauration
+    ; 5. Restore all register
     pop r15
     pop r14
     pop r13
@@ -60,20 +60,20 @@ start:
     pop rax
     popf
     
-    ; 6. Saut vers l'OEP
+    ; 6. Jump to entry point
     lea r11, [rel start]
-    mov rax, 0xAAAAAAAAAAAAAAAA ; Offset relatif vers OEP
+    mov rax, 0xAAAAAAAAAAAAAAAA ; Mark the address for the old entry point 
     add rax, r11
     jmp rax
 
 decrypt_tea:
-    mov rdi, r12                ; Adresse zone cryptée
-    mov rcx, 0xEEEEEEEEEEEEEEEE ; Taille
-    shr rcx, 3                  ; Nb de blocs de 8 octets
+    mov rdi, r12                ; Crypted address
+    mov rcx, 0xEEEEEEEEEEEEEEEE ; Size
+    shr rcx, 3                  ; 8 octet block
     
-    ; Localisation de la clé (16 octets à la fin du payload)
+    ; Adress layout of the key
     lea rsi, [rel start]
-    mov r9, 0xCCCCCCCCCCCCCCCC  ; Offset entre 'start' et la clé
+    mov r9, 0xCCCCCCCCCCCCCCCC  ; Collecting the key
     add rsi, r9
 
 .loop_blocks:
