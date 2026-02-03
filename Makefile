@@ -1,5 +1,5 @@
 NAME				= obj/elf/target
-NAME_P				= obj/elf/woody_woodpacker
+NAME_P				= woody_woodpacker
 NAME_F_P			= woody
 
 CC					= cc
@@ -22,7 +22,7 @@ $(OBJDIR)/%.o: %.c
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-$(NAME): assembly prog injecter injection
+$(NAME): assembly prog injecter
 
 assembly:
 	@mkdir -p obj/assembly 
@@ -38,13 +38,13 @@ injecter: $(OBJECTS_PARASITE)
 	@echo "[Libft compiled ✅]\n"
 	@mkdir -p obj/elf
 	@$(CC) $(LFLAGS) $(OBJECTS_PARASITE) srcs/injecter/libft/libft.a -o $(NAME_P)
+	@echo "[./woody_woodpacker ✅]\n"
 
 injection: 
 	./$(NAME_P) $(NAME)
 	@echo "\n[injection program executed ✅]"
 
-test:
-	$(NAME)
+test: assembly prog injecter injection
 	@echo "$(GREEN)[OK]"
 
 clean:
