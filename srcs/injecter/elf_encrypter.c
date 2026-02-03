@@ -1,11 +1,10 @@
 #include "elf.h"
 
-int key_generation(uint32_t key[4])
+void key_generation(uint32_t key[4])
 {
     int fd = open("/dev/urandom", O_RDONLY);
     if(fd < 0)
-        return(error(ERROR_FILE), 0);
-
+        return(error(ERROR_FILE));
     read(fd, key, sizeof(uint32_t) * 4);
     close(fd);
     printf("Key: 0x%08x%08x%08x%08x\n", key[0], key[1], key[2], key[3]);

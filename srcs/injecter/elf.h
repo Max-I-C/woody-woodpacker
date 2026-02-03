@@ -45,7 +45,7 @@ typedef struct s_elf_data
 
 // -- Functions ELF -- //
 // - elf_encrypter.c - //
-int  key_generation(uint32_t key[4]);
+void key_generation(uint32_t key[4]);
 void encryption_TEA(void *data, size_t size, uint32_t key[4]);
 void encrypter(Elf64_Phdr *phdr, Elf64_Ehdr *eh, void *base, t_elf_data *elf_data);
 // - elf_init.c - //
