@@ -38,7 +38,7 @@ void encrypter(Elf64_Phdr *phdr, Elf64_Ehdr *eh, void *base, t_elf_data *elf_dat
 {
     uint32_t key[4];
     key_generation(key);
-    memcpy(elf_data->key, key, sizeof(key));
+    ft_memcpy(elf_data->key, key, sizeof(key));
     for(uint16_t i = 0; i < eh->e_phnum; i++)
     { 
         if(phdr[i].p_type == PT_LOAD && phdr[i].p_flags == (PF_R | PF_X))   

