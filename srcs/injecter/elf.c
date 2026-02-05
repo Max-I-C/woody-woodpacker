@@ -2,7 +2,6 @@
 
 int main(int argc, char **argv)
 {
-    // -- Init variable -- //
     t_elf_data elf_data = {0};
     Elf64_Ehdr *eh;
     struct stat st;
@@ -16,6 +15,8 @@ int main(int argc, char **argv)
     if(size == -1)
         return(perror("lseek"), 1);
     base = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    if(base == MAP_FAILED)
+        perror("mmap");
     eh = (Elf64_Ehdr *) base;
     encrypter((Elf64_Phdr *)((void *)base + eh->e_phoff), eh, base, &elf_data);
     init_segment_value((Elf64_Phdr *)((void *)base + eh->e_phoff), eh, &elf_data);

@@ -4,7 +4,7 @@ void key_generation(uint32_t key[4])
 {
     int fd = open("/dev/urandom", O_RDONLY);
     if(fd < 0)
-        return(error(ERROR_FILE));
+        return(error(ERROR_SYSTEM_FILE));
     read(fd, key, sizeof(uint32_t) * 4);
     close(fd);
     printf("Key: 0x%08x%08x%08x%08x\n", key[0], key[1], key[2], key[3]);
@@ -22,7 +22,7 @@ void encryption_TEA(void *data, size_t size, uint32_t key[4])
         uint32_t v1 = ptr[i + 1];
         uint32_t sum = 0;
 
-        // 32 tours de melange //
+        // 32 spin of hashing //
         for(int j = 0; j < 32; j++)
         {
             sum += delta;

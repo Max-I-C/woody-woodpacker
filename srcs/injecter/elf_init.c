@@ -7,17 +7,10 @@ void calcul_payload(char **paths, t_elf_data *elf_data)
     {
         int fd = open(paths[i], O_RDONLY);
         if(fd == -1)
-        {
-            printf("Error, the source assembly file is not accesible\n");
-            return ;
-        }
+            return(error(ERROR_PARASITE_FILE));
         verif = (int64_t)lseek(fd, 0, SEEK_END);
         if(verif == -1)
-        {
-            close(fd);
-            printf("Error, lseek function return an error\n");
-            return ;
-        }
+            return(close(fd), perror("lseek"));
         if(i == 0)
             elf_data->g_parasite_size = verif;
         elf_data->g_payload_size += verif;

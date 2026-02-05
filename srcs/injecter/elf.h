@@ -18,12 +18,18 @@
 // --------------- //
 
 // -- Definition of the macro -- //
-#define ERROR_FILE  "Error, file problem.\n"
-#define ERROR_ARG   "Error, not enough argument.\n"
-#define ERROR_PLD   "Error, payload issue.\n"
-#define ERROR_INJ   "Error, not enough space to inject the code.\n"
-#define TARGET_FILE "woody"
-#define BUFFER_SIZE 2048
+#define ERROR_FILE          "Error, file problem.\n"
+#define ERROR_COPY          "Error, the copy of the origin file to the dest file has failed.\n"
+#define ERROR_TARGET_FILE   "Error, while opening the target file.\n"
+#define ERROR_SYSTEM_FILE   "Error, the [/dev/urandom] file is not accesible, check your OS version.\n"
+#define ERROR_PARASITE_FILE "Error, while opening the virus.s file.\n"
+#define ERROR_ORIGIN_FILE   "Error, while opening the origin file.\n"
+#define ERROR_DEST_FILE     "Error, while opening the destination file.\n"
+#define ERROR_ARG           "Error, not enough argument.\n"
+#define ERROR_PLD			"Error, payload issue.\n"
+#define ERROR_INJ			"Error, not enough space to inject the code.\n"
+#define TARGET_FILE			"woody"
+#define BUFFER_SIZE			2048
 // ----------------------------- //
 
 // -- Struct -- //

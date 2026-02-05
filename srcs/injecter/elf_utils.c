@@ -15,20 +15,20 @@ void copy_file(char *origin_file)
 
     fd_origin = open(origin_file, O_RDWR);
     if(fd_origin == -1)
-        return(error(ERROR_FILE));
+        return(error(ERROR_ORIGIN_FILE));
     fd_dest = open(TARGET_FILE,  O_WRONLY | O_CREAT | O_TRUNC, 0777);
     if(fd_dest == -1)
-        return(close(fd_origin), error(ERROR_FILE));
+        return(close(fd_origin), error(ERROR_DEST_FILE));
     while ((return_read = read(fd_origin, buffer, BUFFER_SIZE)) > 0)
     {
         return_write = write(fd_dest, buffer, return_read);    
         if(return_write == -1)
-            return(close(fd_origin), close(fd_dest), error(ERROR_FILE));
+            return(close(fd_origin), close(fd_dest), error(ERROR_COPY));
         else if(return_read != return_write)
-            return(close(fd_origin), close(fd_dest), error(ERROR_ARG));
+            return(close(fd_origin), close(fd_dest), error(ERROR_COPY));
     }
     if(return_read == -1)
-        return(close(fd_origin), close(fd_dest), error(ERROR_FILE));
+        return(close(fd_origin), close(fd_dest), error(ERROR_COPY));
     return ;
 }
 
@@ -41,7 +41,7 @@ bool check_for_errors(int argc, char **argv, int *fd, t_elf_data *elf_data)
     copy_file(argv[1]);
     *fd = open(TARGET_FILE, O_RDWR);
     if(*fd == -1)
-        return(error(ERROR_FILE), true);
+        return(error(ERROR_TARGET_FILE), true);
     calcul_payload(paths, elf_data);
     if(!elf_data->g_payload_size)
         return(close(*fd), error(ERROR_PLD), true);
